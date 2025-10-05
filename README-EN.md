@@ -221,7 +221,8 @@ playwright install chromium
 
 #### 4.1 Configure API Keys
 
-Edit the `config.py` file and fill in your API keys (you can also choose your own models and search proxies):
+Edit the `config.py` file and fill in your API keys (you can also choose your own models and search proxies).
+The refreshed configuration keeps all legacy defaults while letting you override OpenAI-compatible model names and API bases when needed. See [LLM Configuration Unification Notes](./docs/llm_configuration.md) for a detailed compatibility matrix:
 
 ```python
 # MySQL Database Configuration
@@ -232,23 +233,40 @@ DB_PASSWORD = "your_password"
 DB_NAME = "weibo_analysis"
 DB_CHARSET = "utf8mb4"
 
+# Default LLM provider (choose from: deepseek/openai/kimi/gemini)
+DEFAULT_LLM_PROVIDER = "deepseek"
+
 # DeepSeek API (Apply at: https://www.deepseek.com/)
 DEEPSEEK_API_KEY = "your_deepseek_api_key"
+DEEPSEEK_MODEL = "deepseek-chat"
+DEEPSEEK_API_BASE = "https://api.deepseek.com"
 
 # Tavily Search API (Apply at: https://www.tavily.com/)
 TAVILY_API_KEY = "your_tavily_api_key"
 
 # Kimi API (Apply at: https://www.kimi.com/)
 KIMI_API_KEY = "your_kimi_api_key"
+KIMI_MODEL = "kimi-k2-0711-preview"
+KIMI_API_BASE = "https://api.moonshot.cn/v1"
 
 # Gemini API (Apply at: https://api.chataiapi.com/)
 GEMINI_API_KEY = "your_gemini_api_key"
+GEMINI_MODEL = "gemini-2.5-pro"
+GEMINI_API_BASE = "https://www.chataiapi.com/v1"
 
 # Bocha Search API (Apply at: https://open.bochaai.com/)
 BOCHA_Web_Search_API_KEY = "your_bocha_api_key"
 
+# Optional OpenAI API override
+OPENAI_API_KEY = "your_openai_api_key"
+OPENAI_MODEL = "gpt-4o-mini"
+OPENAI_API_BASE = "https://api.openai.com/v1"
+
 # Silicon Flow API (Apply at: https://siliconflow.cn/)
 GUIJI_QWEN3_API_KEY = "your_guiji_api_key"
+GUIJI_QWEN3_API_BASE = "https://api.siliconflow.cn/v1"
+GUIJI_QWEN3_FORUM_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+GUIJI_QWEN3_KEYWORD_MODEL = "Qwen/Qwen3-30B-A3B-Instruct-2507"
 ```
 
 #### 4.2 Database Initialization
@@ -362,7 +380,7 @@ SENTIMENT_CONFIG = {
 
 ### Integrate Different LLM Models
 
-The system supports multiple LLM providers, switchable in each agent's configuration:
+The system supports multiple LLM providers, switchable in each agent's configuration. The same fields now work for any OpenAI-compatible proxy:
 
 ```python
 # Configure in each Engine's utils/config.py
@@ -372,19 +390,28 @@ class Config:
     # DeepSeek configuration
     deepseek_api_key = "your_api_key"
     deepseek_model = "deepseek-chat"
+    deepseek_api_base = "https://api.deepseek.com"
     
     # OpenAI compatible configuration
     openai_api_key = "your_api_key"
-    openai_model = "gpt-3.5-turbo"
-    openai_base_url = "https://api.openai.com/v1"
+    openai_model = "gpt-4o-mini"
+    openai_api_base = "https://api.openai.com/v1"
     
     # Kimi configuration
-    kimi_api_key = "your_api_key"  
-    kimi_model = "moonshot-v1-8k"
+    kimi_api_key = "your_api_key"
+    kimi_model = "kimi-k2-0711-preview"
+    kimi_api_base = "https://api.moonshot.cn/v1"
     
     # Gemini configuration
     gemini_api_key = "your_api_key"
-    gemini_model = "gemini-pro"
+    gemini_model = "gemini-2.5-pro"
+    gemini_api_base = "https://www.chataiapi.com/v1"
+
+    # SiliconFlow Qwen3 (forum host / keyword optimizer)
+    guiji_qwen3_api_key = "your_api_key"
+    guiji_qwen3_forum_model = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+    guiji_qwen3_keyword_model = "Qwen/Qwen3-30B-A3B-Instruct-2507"
+    guiji_qwen3_api_base = "https://api.siliconflow.cn/v1"
 ```
 
 ### Change Sentiment Analysis Models

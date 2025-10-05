@@ -221,7 +221,8 @@ playwright install chromium
 
 #### 4.1 配置API密钥
 
-编辑 `config.py` 文件，填入您的API密钥（您也可以选择自己的模型、搜索代理）：
+编辑 `config.py` 文件，填入您的API密钥（您也可以选择自己的模型、搜索代理）。
+新版配置支持自定义 OpenAI 兼容格式的 API Base 与模型名称，未填写时会自动回退到默认值，与旧版保持一致。关于各字段的兼容性说明详见 [LLM 接入配置统一说明](./docs/llm_configuration.md)：
 
 ```python
 # MySQL数据库配置
@@ -232,23 +233,40 @@ DB_PASSWORD = "your_password"
 DB_NAME = "weibo_analysis"
 DB_CHARSET = "utf8mb4"
 
+# 默认首选的LLM提供商（可选：deepseek/openai/kimi/gemini）
+DEFAULT_LLM_PROVIDER = "deepseek"
+
 # DeepSeek API（申请地址：https://www.deepseek.com/）
 DEEPSEEK_API_KEY = "your_deepseek_api_key"
+DEEPSEEK_MODEL = "deepseek-chat"
+DEEPSEEK_API_BASE = "https://api.deepseek.com"
 
 # Tavily搜索API（申请地址：https://www.tavily.com/）
 TAVILY_API_KEY = "your_tavily_api_key"
 
 # Kimi API（申请地址：https://www.kimi.com/）
 KIMI_API_KEY = "your_kimi_api_key"
+KIMI_MODEL = "kimi-k2-0711-preview"
+KIMI_API_BASE = "https://api.moonshot.cn/v1"
 
 # Gemini API（申请地址：https://api.chataiapi.com/）
 GEMINI_API_KEY = "your_gemini_api_key"
+GEMINI_MODEL = "gemini-2.5-pro"
+GEMINI_API_BASE = "https://www.chataiapi.com/v1"
 
 # 博查搜索API（申请地址：https://open.bochaai.com/）
 BOCHA_Web_Search_API_KEY = "your_bocha_api_key"
 
+# OpenAI API（如需接入，可选填）
+OPENAI_API_KEY = "your_openai_api_key"
+OPENAI_MODEL = "gpt-4o-mini"
+OPENAI_API_BASE = "https://api.openai.com/v1"
+
 # 硅基流动API（申请地址：https://siliconflow.cn/）
 GUIJI_QWEN3_API_KEY = "your_guiji_api_key"
+GUIJI_QWEN3_API_BASE = "https://api.siliconflow.cn/v1"
+GUIJI_QWEN3_FORUM_MODEL = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+GUIJI_QWEN3_KEYWORD_MODEL = "Qwen/Qwen3-30B-A3B-Instruct-2507"
 ```
 
 #### 4.2 数据库初始化
@@ -362,29 +380,38 @@ SENTIMENT_CONFIG = {
 
 ### 接入不同的LLM模型
 
-系统支持多种LLM提供商，可在各Agent的配置中切换：
+系统支持多种LLM提供商，可在各Agent的配置中切换，同一套字段适用于所有 OpenAI 兼容代理：
 
 ```python
 # 在各Engine的utils/config.py中配置
 class Config:
     default_llm_provider = "deepseek"  # 可选: "deepseek", "openai", "kimi", "gemini"，"qwen"等
-    
+
     # DeepSeek配置
     deepseek_api_key = "your_api_key"
     deepseek_model = "deepseek-chat"
-    
+    deepseek_api_base = "https://api.deepseek.com"
+
     # OpenAI兼容配置
     openai_api_key = "your_api_key"
-    openai_model = "gpt-3.5-turbo"
-    openai_base_url = "https://api.openai.com/v1"
-    
+    openai_model = "gpt-4o-mini"
+    openai_api_base = "https://api.openai.com/v1"
+
     # Kimi配置
-    kimi_api_key = "your_api_key"  
-    kimi_model = "moonshot-v1-8k"
-    
+    kimi_api_key = "your_api_key"
+    kimi_model = "kimi-k2-0711-preview"
+    kimi_api_base = "https://api.moonshot.cn/v1"
+
     # Gemini配置
     gemini_api_key = "your_api_key"
-    gemini_model = "gemini-pro"
+    gemini_model = "gemini-2.5-pro"
+    gemini_api_base = "https://www.chataiapi.com/v1"
+
+    # 硅基流动 Qwen3（论坛主持/关键词优化）
+    guiji_qwen3_api_key = "your_api_key"
+    guiji_qwen3_forum_model = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+    guiji_qwen3_keyword_model = "Qwen/Qwen3-30B-A3B-Instruct-2507"
+    guiji_qwen3_api_base = "https://api.siliconflow.cn/v1"
 ```
 
 ### 更改情感分析模型
